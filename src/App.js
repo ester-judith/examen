@@ -1,9 +1,9 @@
+import React from "react";
+import { NavComp } from "./components/authentication/NavComp";
 
 function App() {
   return (
-    <div className="App">
-      <h1>HELLO WORLD    JSJJSJSJSJSJSJJSJSSJJSSJSJSJSJSJSJ</h1>
-    </div>
+    <NavComp />
   );
 }
 
