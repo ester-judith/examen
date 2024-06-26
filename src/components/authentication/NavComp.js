@@ -1,4 +1,6 @@
 import React from 'react'
+import { LoginComp } from './LoginComp'
+import { RegisterComp } from './RegisterComp'
 
 export const NavComp = () => {
     return (
@@ -8,7 +10,10 @@ export const NavComp = () => {
                     <img src="" alt="" />
                 </div>
                 <div className="d-flex">
-                    <div className="col">login register</div>
+                    <div className="col">
+                        <LoginComp />
+                        <RegisterComp />
+                    </div>
                 </div>
             </div>
         </nav>
