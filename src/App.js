@@ -1,9 +1,12 @@
 import React from "react";
 import { NavComp } from "./components/authentication/NavComp";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <NavComp />
+    <AuthProvider>
+      <NavComp />
+    </AuthProvider>
   );
 }
 

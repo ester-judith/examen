@@ -1,5 +1,6 @@
 import { Modal, Form, Button, Alert } from "react-bootstrap";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export const RegisterComp = () => {
     const [showForm, setShowForm] = useState(false);
@@ -8,10 +9,11 @@ export const RegisterComp = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const cmfPasswordRef = useRef();
+    const { register } = useContext(AuthContext)
 
     const openForm = () => setShowForm(true);
     const closeForm = () => setShowForm(false);
-    const submitForm = (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -19,9 +21,12 @@ export const RegisterComp = () => {
             return setError("Contraseña no concuerda")
         }
 
-        console.log(`email is ${emailRef.current.value}`);
-        console.log(`passwordRef is ${passwordRef.current.value}`);
-        console.log(`cmfPasswordRef is ${cmfPasswordRef.current.value}`);
+        try {
+            await register(emailRef.current.value, passwordRef.current.value);
+            closeForm();
+        } catch (error) {
+            setError(error.message)
+        }
     };
 
     return (

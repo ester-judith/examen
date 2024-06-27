@@ -1,5 +1,6 @@
 import { Modal, Form, Button, Alert } from "react-bootstrap";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export const LoginComp = () => {
     const [showForm, setShowForm] = useState(false);
@@ -8,14 +9,20 @@ export const LoginComp = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
 
+    const { login } = useContext(AuthContext);
+
     const openForm = () => setShowForm(true);
     const closeForm = () => setShowForm(false);
-    const submitForm = (e) => {
+    const submitForm = async (e) => {
         e.preventDefault();
         setError('');
 
-        console.log(`email is ${emailRef.current.value}`);
-        console.log(`passwordRef is ${passwordRef.current.value}`);
+        try {
+            await login(emailRef.current.value, passwordRef.current.value);
+            closeForm();
+        } catch (error) {
+            setError("Error, Inicio de sesion invalido");
+        }
     };
 
     return (
