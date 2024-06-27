@@ -32,7 +32,7 @@ export const LoginComp = () => {
             </div>
             <Modal centered show={showForm} onHide={closeForm}>
                 <form onSubmit={submitForm}>
-                    <Modal.Header style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }}>
+                <Modal.Header style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }}>
                         <Modal.Title style={{ color: "#ffffff" }}>
                             Iniciar sesión
                         </Modal.Title>
