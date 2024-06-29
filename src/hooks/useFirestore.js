@@ -1,20 +1,34 @@
 import { useEffect, useState } from 'react';
+import { collection, getDocs, addDoc } from 'firebase/firestore';
 import { firestoreApp } from '../config/firebase';
-import { collection } from 'firebase/firestore';
 
-export const useFirestore = (collection) => {
-    const [docs, setDocs] = useState([]);
+export const useFirestore = (collectionName) => {
+  const [docs, setDocs] = useState([]);
 
-    useEffect (() => {
-        const subscribe = firestoreApp.collection(collection).onSnapshot((snap) => {
-            let documents = [];
-            snap.forEach((doc) => {
-                documents.push({ ...doc.data(), id: doc.id });
-            });
+  useEffect(() => {
+    const fetchDocs = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(firestoreApp, collectionName));
+        const documents = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setDocs(documents);
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+        
+      }
+    };
 
-            setDocs(documents);
-        });
-        return () => subscribe();
-    }, [collection]);
-    return {docs};
-}
+    fetchDocs();
+  }, [collectionName]);
+  const addDocument = async (newDocument) => {
+    try {
+      const docRef = await addDoc(collection(firestoreApp, collectionName), newDocument);
+      // Optionally, you can update the local state with the newly added document
+      setDocs(prevDocs => [...prevDocs, { id: docRef.id, ...newDocument }]);
+    } catch (error) {
+      console.error('Error adding document:', error);
+      throw error; // Re-throwing the error for handling in the component
+    }
+  };
+
+  return { docs, addDocument };
+};
