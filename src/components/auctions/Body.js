@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Alert } from 'react-bootstrap';
+import { Alert, Row } from 'react-bootstrap';
 import { AuthContext } from '../../context/AuthContext';
 import { AddAuction } from './AddAuction';
 import ProgressBarComponent from './ProgressBar';
@@ -21,11 +21,11 @@ export const AuctionBody = () => {
         {currentUser && <AddAuction setAuction={setAuction} />}
 
         {docs && (
-          <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-            {docs.map((doc) => {
-              return <AuctionCard item={doc} key={doc.id} />;
-            })}
-          </div>
+          <Row xs={1} sm={2} md={3} className="g-3">
+            {docs.map((doc) => (
+              <AuctionCard item={doc} key={doc.id} />
+            ))}
+          </Row>
         )}
       </div>
     </div>

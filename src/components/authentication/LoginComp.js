@@ -27,12 +27,12 @@ export const LoginComp = () => {
 
     return (
         <>
-            <div onClick={openForm} className="btn btn-outline-danger mx-2">
+            <div onClick={openForm} className="btn btn-outline-danger mx-2 text-white border-white"> 
                 Iniciar sesión
             </div>
             <Modal centered show={showForm} onHide={closeForm}>
                 <form onSubmit={submitForm}>
-                <Modal.Header style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }}>
+                    <Modal.Header style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }}>
                         <Modal.Title style={{ color: "#ffffff" }}>
                             Iniciar sesión
                         </Modal.Title>
@@ -61,3 +61,4 @@ export const LoginComp = () => {
         </>
     );
 };
+
