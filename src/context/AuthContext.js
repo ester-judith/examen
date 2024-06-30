@@ -5,7 +5,8 @@ import {
     signOut, 
     onAuthStateChanged 
 } from 'firebase/auth';
-import { authApp } from '../config/firebase';
+import { authApp, firestore } from '../config/firebase';
+import { collection, doc, deleteDoc, updateDoc, getDoc } from 'firebase/firestore';
 
 export const AuthContext = createContext();
 
@@ -25,6 +26,37 @@ export const AuthProvider = ({children}) => {
         return signOut(authApp);
     };
 
+    const bidAuction = (itemId, curPrice) => {
+        console.log(`Bidding on item ${itemId} with current price ${curPrice}`)
+    };
+
+    const endAuction = async (itemId) => {
+        console.log(`Ending auction for item ${itemId}`);
+        try {
+            const auctionDoc = doc(firestore, 'auctions', itemId);
+            await deleteDoc(auctionDoc);
+        } catch (error) {
+            console.error('Error ending auction:', error);
+        }
+    };
+
+    const increaseBid = async (auctionId, increment) => {
+        try {
+            const auctionRef = doc(firestore, 'auctions', auctionId);
+            const auctionSnap = await getDoc(auctionRef);
+            if (auctionSnap.exists()) {
+                const newPrice = auctionSnap.data().curPrice + increment;
+                await updateDoc(auctionRef, {
+                    curPrice: newPrice
+                });
+            } else {
+                console.log("No such document!");
+            }
+        } catch (error) {
+            console.error('Error increasing bid:', error);
+        }
+    };
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(authApp, (user) => {
             setCurrentUser(user);
@@ -35,7 +67,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{currentUser, register, login, logout}}>
+        <AuthContext.Provider value={{currentUser, register, login, logout, bidAuction, endAuction, increaseBid}}>
             {!loading && children}
         </AuthContext.Provider>
     );
