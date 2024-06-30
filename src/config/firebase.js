@@ -18,3 +18,4 @@ export const timestamp = serverTimestamp();
 export const firestoreApp = getFirestore(app);
 export const storageApp = getStorage(app);
 export const authApp = getAuth(app);
+export const firestore = getFirestore(app);
