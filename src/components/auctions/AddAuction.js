@@ -34,7 +34,7 @@ export const AddAuction = ({ setAuction }) => {
     const closeForm = () => {
         setShowForm(false);
         setShowSuccess(false);
-    };
+      };
 
     const imgTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -53,9 +53,18 @@ export const AddAuction = ({ setAuction }) => {
         if (url) {
             let currentDate = new Date();
             let durationInHours = parseInt(itemDuration.current.value);
+            let startPriceValue = parseFloat(startPrice.current.value);
+
+            if (startPriceValue <= 0) {
+                return setError('El precio inicial debe ser un valor positivo.');
+            }
 
             if (isNaN(durationInHours) || durationInHours <= 0) {
-                return setError('Please enter a valid number for item duration');
+                return setError('Por favor, introduzca un número válido para la duración del artículo.');
+            }
+
+            if (durationInHours > 100 * 24) {
+                return setError('La duración de la subasta no puede ser más de 100 días.');
             }
 
             let dueDate = currentDate.getTime() + durationInHours * 60 * 60 * 1000;
@@ -82,12 +91,12 @@ export const AddAuction = ({ setAuction }) => {
 
     const handleReload = () => {
         window.location.reload();
-    };
+      };
 
     return (
         <>
             <div className="col d-flex justify-content-center my-3">
-                <div onClick={openForm} className="btn btn-outline-danger mx-2">
+            <div onClick={openForm} className="btn btn-outline-danger mx-2" style={{ fontSize: "1.2em", padding: "0.5em 2em", minWidth: "180px" }}>
                     + Subasta
                 </div>
                 <div onClick={handleButtonClick} className="btn btn-outline-danger mx-2">
@@ -144,30 +153,39 @@ export const AddAuction = ({ setAuction }) => {
                             </Col>
                             <Col>
                                 <Form.Group>
-                                    <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Subir Imagen</Form.Label>
+                                    <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Imagen del Artículo</Form.Label>
                                     <Form.Control
-                                        ref={itemImage}
-                                        type="file"
+                                        type='file'
+                                        label="Seleccione la imagen del artículo"
                                         required
+                                        ref={itemImage}
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
-                        {showSuccess && (
-                            <Alert variant="success">
-                                Subasta creada con éxito. La página se recargará para reflejar los cambios.
-                            </Alert>
-                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={closeForm} style={{ backgroundColor: '#ddd', color: '#000' }}>
                             Cancelar
                         </Button>
-                        <Button type="submit" className="btn btn-primary" style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }} onClick={handleReload}>
-                            Subastar
+                        <Button variant="danger" type="submit" style={{ backgroundColor: '#f5b2c2', color: '#000' }}>
+                            Crear Subasta
                         </Button>
                     </Modal.Footer>
                 </form>
+            </Modal>
+            <Modal centered show={showSuccess} onHide={handleReload} style={{ backgroundColor: "#d69496" }}>
+                <Modal.Header>
+                <Modal.Title>Auction Added Successfully</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <p>Your auction has been added successfully.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleReload}>
+                    Close
+                </Button>
+                </Modal.Footer>
             </Modal>
             <Modal centered show={showChart} onHide={handleCloseChart} size="lg">
                 <Chart handleCloseChart={handleCloseChart} />
