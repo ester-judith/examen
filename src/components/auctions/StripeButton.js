@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 
-const stripePromise = loadStripe('pk_test_51P2lXE2NgCkt3iMqXOYFNvZ6yF8DOe3kNDAlrZFJRzr997OL2VGcnup6slBiysrcwsLySzhPnUlBHZzUvIZkCMch00o2bL5U4i');
+const stripePromise = loadStripe('pk_test_51P2lXE2NgCkt3iMqXOYFNvZ6yF8DOe3kNDAlrZFJRzr997OL2VGcnup6slBiysrcwsLySzhPnUlBHZzUvIZkCMch00o2bL5U4i'); 
 
 const CheckoutForm = ({ amount }) => {
   const stripe = useStripe();
@@ -16,23 +16,25 @@ const CheckoutForm = ({ amount }) => {
     setProcessing(true);
 
     try {
-      const response = await fetch('/create-payment-intent', {
+      const response = await fetch('https://api.stripe.com/v1/payment_intents', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: amount * 100 }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Bearer sk_test_51P2lXE2NgCkt3iMq5ZGVoiMoVz4DG14zWwVbCl5uJb5JtUNnZJnU4IEDJjHszQJXfr7A3cdmtIsD1sysiMyDIDz000KH41kVRE` 
+        },
+        body: new URLSearchParams({
+          'amount': amount * 100,
+          'currency': 'usd',
+          'payment_method_types[]': 'card'
+        })
       });
 
       if (!response.ok) {
         throw new Error('Error al crear el intento de pago');
       }
 
-      const { error: backendError, clientSecret } = await response.json();
-
-      if (backendError) {
-        setError(backendError.message);
-        setProcessing(false);
-        return;
-      }
+      const paymentIntent = await response.json();
+      const clientSecret = paymentIntent.client_secret;
 
       const payload = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
