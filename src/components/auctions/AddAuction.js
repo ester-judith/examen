@@ -8,6 +8,7 @@ export const AddAuction = ({ setAuction }) => {
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState('');
     const [file, setFile] = useState(null);
+    const [showSuccess, setShowSuccess] = useState(false);
 
     const itemTitle = useRef();
     const itemDesc = useRef();
@@ -20,7 +21,10 @@ export const AddAuction = ({ setAuction }) => {
     const { url } = useStorage(file);
 
     const openForm = () => setShowForm(true);
-    const closeForm = () => setShowForm(false);
+    const closeForm = () => {
+        setShowForm(false);
+        setShowSuccess(false);
+      };
 
     const imgTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -38,15 +42,19 @@ export const AddAuction = ({ setAuction }) => {
 
         if (url) {
             let currentDate = new Date();
-            let dueDate = currentDate.setHours(
-                currentDate.getHours() + itemDuration.current.value
-            );
+            let durationInHours = parseInt(itemDuration.current.value);
+
+            if (isNaN(durationInHours) || durationInHours <= 0) {
+                return setError('Please enter a valid number for item duration');
+            }
+
+            let dueDate = currentDate.getTime() + durationInHours * 60 * 60 * 1000;
 
             let newAuction = {
                 email: currentUser.email,
                 title: itemTitle.current.value,
                 desc: itemDesc.current.value,
-                curPrice: startPrice.current.value,
+                curPrice: parseFloat(startPrice.current.value),
                 duration: dueDate,
                 itemImage: url,
             };
@@ -54,13 +62,17 @@ export const AddAuction = ({ setAuction }) => {
             try {
                 await addDocument(newAuction);
                 setAuction(newAuction);
-                closeForm();
+                setShowSuccess(true);
             } catch (error) {
                 console.error('Error adding auction:', error);
                 setError('No se pudo agregar la subasta. Intente de nuevo más tarde.'); 
             }
         }
     };
+
+    const handleReload = () => {
+        window.location.reload();
+      };
 
     return (
         <>
@@ -139,6 +151,19 @@ export const AddAuction = ({ setAuction }) => {
                         </Button>
                     </Modal.Footer>
                 </form>
+            </Modal>
+            <Modal centered show={showSuccess} onHide={handleReload}>
+                <Modal.Header>
+                <Modal.Title>Auction Added Successfully</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <p>Your auction has been added successfully.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleReload}>
+                    Close
+                </Button>
+                </Modal.Footer>
             </Modal>
         </>
     );

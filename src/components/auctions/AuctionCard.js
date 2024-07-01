@@ -61,7 +61,8 @@ const Renderer = ({
           <CardTitle className="lead display-6">{item.title}</CardTitle>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>
-              {days * 24 + hours} hr: {minutes} min: {seconds} sec
+            {days > 0 ? `${days} día${days > 1 ? 's' : ''}, ` : ''}
+            {hours} hr: {minutes} min: {seconds} sec
             </h5>
           </div>
           <CardText>{item.desc}</CardText>
