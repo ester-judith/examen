@@ -13,6 +13,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({children}) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const register = (email, password) => {
         return createUserWithEmailAndPassword(authApp, email, password);
@@ -35,8 +37,10 @@ export const AuthProvider = ({children}) => {
         try {
             const auctionDoc = doc(firestore, 'auctions', itemId);
             await deleteDoc(auctionDoc);
+            setSuccessMessage('Auction canceled successfully.');
         } catch (error) {
             console.error('Error ending auction:', error);
+            setErrorMessage('Failed to cancel auction. Please try again later.');
         }
     };
 
@@ -67,7 +71,7 @@ export const AuthProvider = ({children}) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{currentUser, register, login, logout, bidAuction, endAuction, increaseBid}}>
+        <AuthContext.Provider value={{currentUser, register, login, logout, bidAuction, endAuction, increaseBid, successMessage, errorMessage}}>
             {!loading && children}
         </AuthContext.Provider>
     );

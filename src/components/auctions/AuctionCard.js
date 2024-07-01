@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import Countdown from 'react-countdown';
 import { AuthContext } from '../../context/AuthContext';
 import StripeButton from './StripeButton';
-import { Button, Card, Col, Form } from 'react-bootstrap';
+import { Button, Card, Col, Form, Modal, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
 
 const StyledCard = styled(Card)`
@@ -48,10 +48,25 @@ const Renderer = ({
   increaseBid,
   incrementAmount,
   handleIncrementChange,
+  setSuccessMessage,
+  setErrorMessage,
 }) => {
+  const { successMessage, errorMessage } = useContext(AuthContext);
+
   if (completed) {
     return null;
   }
+
+  const handleEndAuction = (itemId) => {
+    endAuction(itemId);
+    setSuccessMessage('Subasta cancelada exitosamente.');
+  };
+
+  const handleCloseModal = () => {
+    setSuccessMessage('');
+    setErrorMessage('');
+    window.location.reload();
+  };
 
   return (
     <Col className="mb-4">
@@ -76,7 +91,7 @@ const Renderer = ({
                   Oferta
                 </Button>
               ) : owner.email === item.email ? (
-                <Button variant="outline-danger" onClick={() => endAuction(item.id)}>
+                <Button variant="outline-danger" onClick={() => handleEndAuction(item.id)}>
                   Cancelar subasta
                 </Button>
               ) : owner.email === item.curWinner ? (
@@ -108,6 +123,36 @@ const Renderer = ({
           </div>
         </CardBody>
       </StyledCard>
+        {successMessage && (
+        <Modal centered show={!!successMessage} onHide={handleCloseModal}>
+          <Modal.Header>
+            <Modal.Title>Success</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert variant="success">{successMessage}</Alert>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {errorMessage && (
+        <Modal centered show={!!errorMessage} onHide={handleCloseModal}>
+          <Modal.Header>
+            <Modal.Title>Error</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert variant="danger">{errorMessage}</Alert>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
     </Col>
   );
 };
@@ -115,6 +160,8 @@ const Renderer = ({
 export const AuctionCard = ({ item }) => {
   const [incrementAmount, setIncrementAmount] = useState(0);
   const { currentUser, bidAuction, endAuction, increaseBid } = useContext(AuthContext);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleIncrementChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -140,6 +187,8 @@ export const AuctionCard = ({ item }) => {
           increaseBid={increaseBid}
           incrementAmount={incrementAmount}
           handleIncrementChange={handleIncrementChange}
+          setSuccessMessage={setSuccessMessage}
+          setErrorMessage={setErrorMessage}
         />
       )}
     />
