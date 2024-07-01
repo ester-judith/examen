@@ -4,14 +4,15 @@ import { AuthContext } from '../../context/AuthContext';
 import StripeButton from './StripeButton';
 import { Button, Card, Col, Form, Modal, Alert } from 'react-bootstrap';
 import styled from 'styled-components';
+import { useFirestore } from '../../hooks/useFirestore';
 
 const StyledCard = styled(Card)`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-  border: 2px solid #d69496; /* Color rosa: #f50057 */
-  border-radius: 10px; /* Ajusta según sea necesario */
+  border: 2px solid #d69496;
+  border-radius: 10px;
 `;
 
 const CardBody = styled(Card.Body)`
@@ -48,10 +49,12 @@ const Renderer = ({
   increaseBid,
   incrementAmount,
   handleIncrementChange,
+  curPrice,
+  setCurPrice,
   setSuccessMessage,
   setErrorMessage,
 }) => {
-  const { successMessage, errorMessage } = useContext(AuthContext);
+  const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
 
   if (completed) {
     return null;
@@ -68,6 +71,14 @@ const Renderer = ({
     window.location.reload();
   };
 
+  const handleIncreaseBid = () => {
+    if (incrementAmount > 0) {
+      const newPrice = curPrice + incrementAmount;
+      setCurPrice(newPrice);
+      increaseBid(item.id, incrementAmount);
+    }
+  };
+
   return (
     <Col className="mb-4">
       <StyledCard className="shadow-sm h-100">
@@ -76,34 +87,22 @@ const Renderer = ({
           <CardTitle className="lead display-6">{item.title}</CardTitle>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>
-            {days > 0 ? `${days} día${days > 1 ? 's' : ''}, ` : ''}
-            {hours} hr: {minutes} min: {seconds} sec
+              {days > 0 ? `${days} día${days > 1 ? 's' : ''}, ` : ''}
+              {hours} hr: {minutes} min: {seconds} sec
             </h5>
           </div>
           <CardText>{item.desc}</CardText>
           <div className="mt-auto">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <p className="display-6">${item.curPrice}</p>
+              <p className="display-6">${curPrice}</p>
             </div>
             <div className="d-flex flex-column">
-              {!owner ? (
-                <Button variant="outline-danger" onClick={() => bidAuction(item.id, item.curPrice)}>
+              {!currentUser || owner.email === item.email ? (
+                <Button variant="outline-danger mb-2" onClick={() => bidAuction(item.id, curPrice)}>
                   Oferta
                 </Button>
-              ) : owner.email === item.email ? (
-                <Button variant="outline-danger" onClick={() => handleEndAuction(item.id)}>
-                  Cancelar subasta
-                </Button>
-              ) : owner.email === item.curWinner ? (
-                <div className="d-flex align-items-center">
-                  <p className="display-6 mr-2">Ganador</p>
-                  <StripeButton amount={item.curPrice} />
-                </div>
               ) : (
                 <>
-                  <Button variant="outline-danger mb-2" onClick={() => bidAuction(item.id, item.curPrice)}>
-                    Oferta
-                  </Button>
                   <div className="input-group mb-2">
                     <Form.Control
                       type="number"
@@ -112,18 +111,34 @@ const Renderer = ({
                       placeholder="Cantidad a incrementar"
                       className="mr-2"
                     />
-                    <Button variant="outline-danger" onClick={() => increaseBid(item.id)}>
+                    <Button variant="outline-danger" onClick={handleIncreaseBid}>
                       Incrementar oferta
                     </Button>
                   </div>
-                  <StripeButton amount={item.curPrice + (incrementAmount || 0)} />
+                  {owner.email === item.curWinner && (
+                    <div className="d-flex align-items-center">
+                      <p className="display-6 mr-2">Ganador</p>
+                      <StripeButton
+                        amount={curPrice}
+                        itemTitle={item.title}
+                        itemImage={item.itemImage}
+                        userEmail={item.curWinnerEmail}
+                        productOwner={item.email}
+                      />
+                    </div>
+                  )}
                 </>
+              )}
+              {currentUser && currentUser.email === item.email && (
+                <Button variant="outline-danger" onClick={() => endAuction(item.id)}>
+                  Cancelar subasta
+                </Button>
               )}
             </div>
           </div>
         </CardBody>
       </StyledCard>
-        {successMessage && (
+      {successMessage && (
         <Modal centered show={!!successMessage} onHide={handleCloseModal}>
           <Modal.Header>
             <Modal.Title>Success</Modal.Title>
@@ -159,7 +174,9 @@ const Renderer = ({
 
 export const AuctionCard = ({ item }) => {
   const [incrementAmount, setIncrementAmount] = useState(0);
+  const [curPrice, setCurPrice] = useState(item.curPrice);
   const { currentUser, bidAuction, endAuction, increaseBid } = useContext(AuthContext);
+  const { docs } = useFirestore('auctions');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -187,6 +204,8 @@ export const AuctionCard = ({ item }) => {
           increaseBid={increaseBid}
           incrementAmount={incrementAmount}
           handleIncrementChange={handleIncrementChange}
+          curPrice={curPrice}
+          setCurPrice={setCurPrice}
           setSuccessMessage={setSuccessMessage}
           setErrorMessage={setErrorMessage}
         />
