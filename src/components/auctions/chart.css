@@ -1,0 +1,17 @@
+/* Estilos para el contenedor de la gráfica */
+.chart-container {
+    width: 100%;
+    max-width: 1000px; /* Ajusta esto según sea necesario */
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+    position: sticky; /* O usa 'fixed' si prefieres */
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Asegura que la barra esté por encima de otros elementos */
+    background-color: #fff; /* O el color que prefieras */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

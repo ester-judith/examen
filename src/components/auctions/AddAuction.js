@@ -3,12 +3,22 @@ import React, { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useFirestore } from "../../hooks/useFirestore";
 import useStorage from "../../hooks/useStorage";
+import Chart from "./Chart";
 
 export const AddAuction = ({ setAuction }) => {
     const [showForm, setShowForm] = useState(false);
     const [error, setError] = useState('');
     const [file, setFile] = useState(null);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showChart, setShowChart] = useState(false);
+
+    const handleButtonClick = () => {
+        setShowChart(true);
+    };
+
+    const handleCloseChart = () => {
+        setShowChart(false);
+    };
 
     const itemTitle = useRef();
     const itemDesc = useRef();
@@ -24,7 +34,7 @@ export const AddAuction = ({ setAuction }) => {
     const closeForm = () => {
         setShowForm(false);
         setShowSuccess(false);
-      };
+    };
 
     const imgTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -72,13 +82,16 @@ export const AddAuction = ({ setAuction }) => {
 
     const handleReload = () => {
         window.location.reload();
-      };
+    };
 
     return (
         <>
             <div className="col d-flex justify-content-center my-3">
                 <div onClick={openForm} className="btn btn-outline-danger mx-2">
                     + Subasta
+                </div>
+                <div onClick={handleButtonClick} className="btn btn-outline-danger mx-2">
+                    Ver graficas
                 </div>
             </div>
             <Modal centered show={showForm} onHide={closeForm}>
@@ -131,39 +144,33 @@ export const AddAuction = ({ setAuction }) => {
                             </Col>
                             <Col>
                                 <Form.Group>
-                                    <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Imagen del Artículo</Form.Label>
+                                    <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Subir Imagen</Form.Label>
                                     <Form.Control
-                                        type='file'
-                                        label="Seleccione la imagen del artículo"
-                                        required
                                         ref={itemImage}
+                                        type="file"
+                                        required
                                     />
                                 </Form.Group>
                             </Col>
                         </Row>
+                        {showSuccess && (
+                            <Alert variant="success">
+                                Subasta creada con éxito. La página se recargará para reflejar los cambios.
+                            </Alert>
+                        )}
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={closeForm} style={{ backgroundColor: '#ddd', color: '#000' }}>
                             Cancelar
                         </Button>
-                        <Button variant="danger" type="submit" style={{ backgroundColor: '#f5b2c2', color: '#000' }}>
-                            Crear Subasta
+                        <Button type="submit" className="btn btn-primary" style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }} onClick={handleReload}>
+                            Subastar
                         </Button>
                     </Modal.Footer>
                 </form>
             </Modal>
-            <Modal centered show={showSuccess} onHide={handleReload}>
-                <Modal.Header>
-                <Modal.Title>Auction Added Successfully</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <p>Your auction has been added successfully.</p>
-                </Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={handleReload}>
-                    Close
-                </Button>
-                </Modal.Footer>
+            <Modal centered show={showChart} onHide={handleCloseChart} size="lg">
+                <Chart handleCloseChart={handleCloseChart} />
             </Modal>
         </>
     );

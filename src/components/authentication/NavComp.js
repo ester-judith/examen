@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import { Button } from "react-bootstrap";
 import { LoginComp } from './LoginComp';
 import { RegisterComp } from './RegisterComp';
 import { AuthContext } from '../../context/AuthContext';
