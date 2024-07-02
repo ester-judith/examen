@@ -76,8 +76,8 @@ const Renderer = ({
             <CardTitle className="lead display-6">Subasta Terminada</CardTitle>
             <CardText>{item.title}</CardText>
             <CardText>Precio final: ${curPrice}</CardText>
-            
-              <CardText><div className="d-flex align-items-center">
+            {isWinner ? (
+              <div className="d-flex align-items-center">
                 <p className="display-6 mr-2">¡Eres el ganador!</p>
                 <StripeButton
                   amount={curPrice}
@@ -86,7 +86,10 @@ const Renderer = ({
                   userEmail={currentUser.email}
                   productOwner={item.email}
                 />
-              </div></CardText>
+              </div>
+            ) : (
+              <CardText>No eres el ganador de esta subasta.</CardText>
+            )}
           </CardBody>
         </StyledCard>
       </Col>
