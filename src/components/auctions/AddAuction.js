@@ -34,7 +34,7 @@ export const AddAuction = ({ setAuction }) => {
     const closeForm = () => {
         setShowForm(false);
         setShowSuccess(false);
-      };
+    };
 
     const imgTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
@@ -91,15 +91,15 @@ export const AddAuction = ({ setAuction }) => {
 
     const handleReload = () => {
         window.location.reload();
-      };
+    };
 
     return (
         <>
             <div className="col d-flex justify-content-center my-3">
-            <div onClick={openForm} className="btn btn-outline-danger mx-2" style={{ fontSize: "1.2em", padding: "0.5em 2em", minWidth: "180px" }}>
+                <div onClick={openForm} className="btn btn-outline-danger mx-2" style={{ fontSize: "1.2em", padding: "0.5em 2em", minWidth: "180px", minHeight: "50px" }}>
                     + Subasta
                 </div>
-                <div onClick={handleButtonClick} className="btn btn-outline-danger mx-2">
+                <div onClick={handleButtonClick} className="btn btn-outline-danger mx-2" style={{ fontSize: "1.2em", padding: "0.5em 2em", minWidth: "180px", minHeight: "50px" }}>
                     Ver graficas
                 </div>
             </div>
@@ -176,15 +176,15 @@ export const AddAuction = ({ setAuction }) => {
             </Modal>
             <Modal centered show={showSuccess} onHide={handleReload} style={{ backgroundColor: "#d69496" }}>
                 <Modal.Header>
-                <Modal.Title>Auction Added Successfully</Modal.Title>
+                    <Modal.Title>Subasta agregada con éxito</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <p>Your auction has been added successfully.</p>
+                    <p>Su subasta se ha agregado con éxito.</p>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleReload}>
-                    Close
-                </Button>
+                    <Button variant="secondary" onClick={handleReload}>
+                        Cerrar
+                    </Button>
                 </Modal.Footer>
             </Modal>
             <Modal centered show={showChart} onHide={handleCloseChart} size="lg">

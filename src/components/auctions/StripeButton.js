@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, Alert } from 'react-bootstrap';
 
 const stripePromise = loadStripe('pk_test_51P2lXE2NgCkt3iMqXOYFNvZ6yF8DOe3kNDAlrZFJRzr997OL2VGcnup6slBiysrcwsLySzhPnUlBHZzUvIZkCMch00o2bL5U4i');
 
@@ -64,10 +64,11 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
 
   return (
     <Form onSubmit={handleSubmit}>
+      {error && <Alert variant="danger">{error}</Alert>}
       <Row>
         <Col md={6}>
           <Form.Group>
-            <Form.Label>Correo del comprador</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Correo del comprador</Form.Label>
             <Form.Control
               type="email"
               value={userEmail}
@@ -75,7 +76,7 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Producto</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Producto</Form.Label>
             <Form.Control
               type="text"
               value={itemTitle}
@@ -83,7 +84,7 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Dueño del producto</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Dueño del producto</Form.Label>
             <Form.Control
               type="text"
               value={productOwner}
@@ -91,7 +92,7 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Precio a pagar</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Precio a pagar</Form.Label>
             <Form.Control
               type="text"
               value={`$${amount}`}
@@ -99,7 +100,7 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Nombre del comprador</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Nombre del comprador</Form.Label>
             <Form.Control
               type="text"
               value={buyerName}
@@ -111,7 +112,7 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
         </Col>
         <Col md={6}>
           <Form.Group>
-            <Form.Label>Imagen del producto</Form.Label>
+            <Form.Label style={{ color: "#d69496", fontSize: "1.0em", fontWeight: "bold" }}>Imagen del producto</Form.Label>
             <div>
               <img src={itemImage} alt={itemTitle} style={{ maxWidth: '100%' }} />
             </div>
@@ -119,10 +120,9 @@ const CheckoutForm = ({ amount, itemTitle, itemImage, userEmail, productOwner })
         </Col>
       </Row>
       <CardElement />
-      <Button type="submit" disabled={!stripe || processing || succeeded}>
+      <Button type="submit" disabled={!stripe || processing || succeeded} style={{ backgroundColor: '#f5b2c2', color: '#000' }}>
         {processing ? 'Procesando' : 'Pagar'}
       </Button>
-      {error && <div className="card-error">{error}</div>}
     </Form>
   );
 };
@@ -135,19 +135,26 @@ const StripeButton = ({ amount, itemTitle, itemImage, userEmail, productOwner })
 
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
+      <Button variant="primary" onClick={handleShow} style={{ backgroundColor: '#d69496', border: '1px solid #dddddd', color: '#ffffff' }}>
         Pagar
       </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Formulario de pago</Modal.Title>
+      <Modal centered show={show} onHide={handleClose}>
+        <Modal.Header style={{ backgroundColor: "#d69496", border: "1px solid #dddddd" }} closeButton>
+          <Modal.Title style={{ color: "#ffffff" }}>
+            Formulario de pago
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Elements stripe={stripePromise}>
             <CheckoutForm amount={amount} itemTitle={itemTitle} itemImage={itemImage} userEmail={userEmail} productOwner={productOwner} />
           </Elements>
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose} style={{ backgroundColor: '#ddd', color: '#000' }}>
+            Cancelar
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );
