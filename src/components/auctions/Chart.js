@@ -10,7 +10,7 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
-import { AuthContext } from '../../context/AuthContext';  // Asegúrate de importar tu contexto de autenticación
+import { AuthContext } from '../../context/AuthContext'; 
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
@@ -28,14 +28,14 @@ const Chart = () => {
         }]
     });
 
-    const { currentUser } = useContext(AuthContext);  // Usa el contexto de autenticación para obtener el usuario actual
+    const { currentUser } = useContext(AuthContext); 
 
     useEffect(() => {
         const fetchData = async () => {
             const q = query(collection(firestore, 'auctions'), where('email', '==', currentUser?.email));
             onSnapshot(q, (snapshot) => {
                 const data = snapshot.docs.map(doc => doc.data());
-                console.log("Filtered user data:", data);  // Registro de depuración
+                console.log("Filtered user data:", data); 
                 processChartData(data);
             });
         };
