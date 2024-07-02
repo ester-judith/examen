@@ -55,9 +55,21 @@ const Renderer = ({
   setErrorMessage,
 }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
+  const [showLoginAlert, setShowLoginAlert] = useState(false);
 
   if (completed) {
-    return null;
+    return (
+      <Col className="mb-4">
+        <StyledCard className="shadow-sm h-100">
+          <ImageContainer style={{ backgroundImage: `url(${item.itemImage})` }} />
+          <CardBody>
+            <CardTitle className="lead display-6">Subasta Terminada</CardTitle>
+            <CardText>{item.title}</CardText>
+            <CardText>Precio final: ${curPrice}</CardText>
+          </CardBody>
+        </StyledCard>
+      </Col>
+    );
   }
 
   const handleEndAuction = (itemId) => {
@@ -76,6 +88,14 @@ const Renderer = ({
       const newPrice = curPrice + incrementAmount;
       setCurPrice(newPrice);
       increaseBid(item.id, incrementAmount);
+    }
+  };
+
+  const handleBidClick = () => {
+    if (!currentUser) {
+      setShowLoginAlert(true);
+    } else {
+      bidAuction(item.id, curPrice);
     }
   };
 
@@ -98,7 +118,7 @@ const Renderer = ({
             </div>
             <div className="d-flex flex-column">
               {!currentUser ? (
-                <Button variant="outline-danger mb-2" onClick={() => bidAuction(item.id, curPrice)}>
+                <Button variant="outline-danger mb-2" onClick={handleBidClick}>
                   Oferta
                 </Button>
               ) : owner && owner.email === item.email ? (
@@ -109,10 +129,10 @@ const Renderer = ({
                 <div className="d-flex align-items-center">
                   <p className="display-6 mr-2">Ganador</p>
                   <StripeButton
-                    amount={curPrice}
+                    amount={curPrice + (incrementAmount || 0)}
                     itemTitle={item.title}
                     itemImage={item.itemImage}
-                    userEmail={item.curWinnerEmail}
+                    userEmail={owner.email}
                     productOwner={item.email}
                   />
                 </div>
@@ -130,13 +150,6 @@ const Renderer = ({
                       Incrementar oferta
                     </Button>
                   </div>
-                  <StripeButton
-                    amount={curPrice + (incrementAmount || 0)}
-                    itemTitle={item.title}
-                    itemImage={item.itemImage}
-                    userEmail={owner.email}
-                    productOwner={item.email}
-                  />
                 </>
               )}
             </div>
@@ -146,14 +159,14 @@ const Renderer = ({
       {successMessage && (
         <Modal centered show={!!successMessage} onHide={handleCloseModal}>
           <Modal.Header>
-            <Modal.Title>Success</Modal.Title>
+            <Modal.Title>Exito</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Alert variant="success">{successMessage}</Alert>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
-              Close
+              Cerrar
             </Button>
           </Modal.Footer>
         </Modal>
@@ -168,7 +181,22 @@ const Renderer = ({
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
-              Close
+              Cerrar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+      {showLoginAlert && (
+        <Modal centered show={showLoginAlert} onHide={() => setShowLoginAlert(false)}>
+          <Modal.Header>
+            <Modal.Title>Iniciar sesión</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert variant="warning">Debe iniciar sesión para poder ofertar.</Alert>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowLoginAlert(false)}>
+              Cerrar
             </Button>
           </Modal.Footer>
         </Modal>
