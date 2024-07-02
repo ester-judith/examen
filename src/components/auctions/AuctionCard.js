@@ -61,12 +61,12 @@ const Renderer = ({
     if (incrementAmount > 0) {
       const newPrice = curPrice + incrementAmount;
       setCurPrice(newPrice);
-      increaseBid(item.id, incrementAmount, currentUser.uid); // Registro del usuario que incrementa la oferta
+      increaseBid(item.id, incrementAmount, currentUser.uid);
     }
   };
 
   if (completed) {
-    const isWinner = currentUser && currentUser.uid === item.lastBidder; // Verificación si el usuario actual es el ganador
+    const isWinner = currentUser && currentUser.uid === item.lastBidder;
 
     return (
       <Col className="mb-4">
@@ -76,20 +76,17 @@ const Renderer = ({
             <CardTitle className="lead display-6">Subasta Terminada</CardTitle>
             <CardText>{item.title}</CardText>
             <CardText>Precio final: ${curPrice}</CardText>
-            {isWinner ? (
-              <div className="d-flex align-items-center">
+            
+              <CardText><div className="d-flex align-items-center">
                 <p className="display-6 mr-2">¡Eres el ganador!</p>
                 <StripeButton
-                  amount={curPrice} // Asegúrate de pasar el precio final correcto para pagar
+                  amount={curPrice}
                   itemTitle={item.title}
                   itemImage={item.itemImage}
                   userEmail={currentUser.email}
                   productOwner={item.email}
                 />
-              </div>
-            ) : (
-              <CardText>No eres el ganador de esta subasta.</CardText>
-            )}
+              </div></CardText>
           </CardBody>
         </StyledCard>
       </Col>
@@ -104,7 +101,7 @@ const Renderer = ({
     }
   };
 
-  const handleEndAuction = (itemId) => { // Definición de handleEndAuction
+  const handleEndAuction = (itemId) => {
     endAuction(itemId);
     setSuccessMessage('Subasta cancelada exitosamente.');
   };
