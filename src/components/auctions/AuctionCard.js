@@ -57,7 +57,17 @@ const Renderer = ({
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [showLoginAlert, setShowLoginAlert] = useState(false);
 
+  const handleIncreaseBid = () => {
+    if (incrementAmount > 0) {
+      const newPrice = curPrice + incrementAmount;
+      setCurPrice(newPrice);
+      increaseBid(item.id, incrementAmount, currentUser.uid); // Registro del usuario que incrementa la oferta
+    }
+  };
+
   if (completed) {
+    const isWinner = currentUser && currentUser.uid === item.lastBidder; // Verificación si el usuario actual es el ganador
+
     return (
       <Col className="mb-4">
         <StyledCard className="shadow-sm h-100">
@@ -66,13 +76,35 @@ const Renderer = ({
             <CardTitle className="lead display-6">Subasta Terminada</CardTitle>
             <CardText>{item.title}</CardText>
             <CardText>Precio final: ${curPrice}</CardText>
+            {isWinner ? (
+              <div className="d-flex align-items-center">
+                <p className="display-6 mr-2">¡Eres el ganador!</p>
+                <StripeButton
+                  amount={curPrice} // Asegúrate de pasar el precio final correcto para pagar
+                  itemTitle={item.title}
+                  itemImage={item.itemImage}
+                  userEmail={currentUser.email}
+                  productOwner={item.email}
+                />
+              </div>
+            ) : (
+              <CardText>No eres el ganador de esta subasta.</CardText>
+            )}
           </CardBody>
         </StyledCard>
       </Col>
     );
   }
 
-  const handleEndAuction = (itemId) => {
+  const handleBidClick = () => {
+    if (!currentUser) {
+      setShowLoginAlert(true);
+    } else {
+      bidAuction(item.id, curPrice);
+    }
+  };
+
+  const handleEndAuction = (itemId) => { // Definición de handleEndAuction
     endAuction(itemId);
     setSuccessMessage('Subasta cancelada exitosamente.');
   };
@@ -81,22 +113,6 @@ const Renderer = ({
     setSuccessMessage('');
     setErrorMessage('');
     window.location.reload();
-  };
-
-  const handleIncreaseBid = () => {
-    if (incrementAmount > 0) {
-      const newPrice = curPrice + incrementAmount;
-      setCurPrice(newPrice);
-      increaseBid(item.id, incrementAmount);
-    }
-  };
-
-  const handleBidClick = () => {
-    if (!currentUser) {
-      setShowLoginAlert(true);
-    } else {
-      bidAuction(item.id, curPrice);
-    }
   };
 
   return (
@@ -125,17 +141,6 @@ const Renderer = ({
                 <Button variant="outline-danger" onClick={() => handleEndAuction(item.id)}>
                   Cancelar subasta
                 </Button>
-              ) : owner && owner.email === item.curWinner ? (
-                <div className="d-flex align-items-center">
-                  <p className="display-6 mr-2">Ganador</p>
-                  <StripeButton
-                    amount={curPrice + (incrementAmount || 0)}
-                    itemTitle={item.title}
-                    itemImage={item.itemImage}
-                    userEmail={owner.email}
-                    productOwner={item.email}
-                  />
-                </div>
               ) : (
                 <>
                   <div className="input-group mb-2">
