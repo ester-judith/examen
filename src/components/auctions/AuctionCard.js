@@ -97,10 +97,25 @@ const Renderer = ({
               <p className="display-6">${curPrice}</p>
             </div>
             <div className="d-flex flex-column">
-              {!currentUser || owner.email === item.email ? (
+              {!currentUser ? (
                 <Button variant="outline-danger mb-2" onClick={() => bidAuction(item.id, curPrice)}>
                   Oferta
                 </Button>
+              ) : owner && owner.email === item.email ? (
+                <Button variant="outline-danger" onClick={() => handleEndAuction(item.id)}>
+                  Cancelar subasta
+                </Button>
+              ) : owner && owner.email === item.curWinner ? (
+                <div className="d-flex align-items-center">
+                  <p className="display-6 mr-2">Ganador</p>
+                  <StripeButton
+                    amount={curPrice}
+                    itemTitle={item.title}
+                    itemImage={item.itemImage}
+                    userEmail={item.curWinnerEmail}
+                    productOwner={item.email}
+                  />
+                </div>
               ) : (
                 <>
                   <div className="input-group mb-2">
@@ -115,24 +130,14 @@ const Renderer = ({
                       Incrementar oferta
                     </Button>
                   </div>
-                  {owner.email === item.curWinner && (
-                    <div className="d-flex align-items-center">
-                      <p className="display-6 mr-2">Ganador</p>
-                      <StripeButton
-                        amount={curPrice}
-                        itemTitle={item.title}
-                        itemImage={item.itemImage}
-                        userEmail={item.curWinnerEmail}
-                        productOwner={item.email}
-                      />
-                    </div>
-                  )}
+                  <StripeButton
+                    amount={curPrice + (incrementAmount || 0)}
+                    itemTitle={item.title}
+                    itemImage={item.itemImage}
+                    userEmail={owner.email}
+                    productOwner={item.email}
+                  />
                 </>
-              )}
-              {currentUser && currentUser.email === item.email && (
-                <Button variant="outline-danger" onClick={() => endAuction(item.id)}>
-                  Cancelar subasta
-                </Button>
               )}
             </div>
           </div>
