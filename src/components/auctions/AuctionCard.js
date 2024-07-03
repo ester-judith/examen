@@ -66,8 +66,6 @@ const Renderer = ({
   };
 
   if (completed) {
-    const isWinner = currentUser && currentUser.uid === item.lastBidder;
-
     return (
       <Col className="mb-4">
         <StyledCard className="shadow-sm h-100">
@@ -76,7 +74,7 @@ const Renderer = ({
             <CardTitle className="lead display-6">Subasta Terminada</CardTitle>
             <CardText>{item.title}</CardText>
             <CardText>Precio final: ${curPrice}</CardText>
-            {isWinner ? (
+            {currentUser && (
               <div className="d-flex align-items-center">
                 <p className="display-6 mr-2">¡Eres el ganador!</p>
                 <StripeButton
@@ -87,8 +85,6 @@ const Renderer = ({
                   productOwner={item.email}
                 />
               </div>
-            ) : (
-              <CardText>No eres el ganador de esta subasta.</CardText>
             )}
           </CardBody>
         </StyledCard>
