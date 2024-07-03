@@ -56,7 +56,7 @@ export const AddAuction = ({ setAuction }) => {
             let startPriceValue = parseFloat(startPrice.current.value);
 
             if (startPriceValue <= 0) {
-                return setError('El precio inicial debe ser un valor positivo.');
+                return setError('El precio inicial debe ser un valor positivo y mayor a 0.');
             }
 
             if (isNaN(durationInHours) || durationInHours <= 0) {
